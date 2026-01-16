@@ -333,10 +333,11 @@ class patch {
 ## Key Findings and Problems
 
 ### 1. **Code Quality Issues** (Legacy Codebase)
-- Written in 2007, uses outdated C++ (pre-C++11)
-- Mixed C++/Fortran90 with manual interfaces
+- Written in 2007, uses outdated C++ (pre-C++11, lacks auto, lambda, smart pointers, move semantics)
+- Would benefit from modern C++17/C++20 features (structured bindings, ranges, concepts)
+- Mixed C++/Fortran90 with manual interfaces (could use ISO_C_BINDING)
 - Minimal comments, cryptic variable names
-- No modern build system (handwritten Makefiles)
+- No modern build system (handwritten Makefiles, would benefit from CMake)
 - High technical debt accumulated over ~18 years
 
 ### 2. **Massive Code Duplication**

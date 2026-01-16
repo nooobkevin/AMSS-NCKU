@@ -73,10 +73,13 @@ Adown(1,:) = [Axx, Axy, Axz]
 Adown(2,:) = [Axy, Ayy, Ayz]
 Adown(3,:) = [Axz, Ayz, Azz]
 
-! For symmetric tensors: A^ij = g^ik g^jl A_kl = g^ik A_kl g^lj
-! Contract first with second index of A, then first index
-temp = MATMUL(gup, Adown)        ! temp^i_j = g^ik A_kj
-Aup = MATMUL(temp, gup)          ! Aup^ij = temp^i_k g^kj = g^ik A_kl g^lj
+! For symmetric tensors: A^ij = g^ik g^jl A_kl
+! Due to symmetry: A_kl = A_lk and g^ik = g^ki
+! We can write: A^ij = (g^ik A_kl) g^lj
+! First contraction: contract g^ik with A_kl over k index
+temp = MATMUL(gup, Adown)        ! temp^i_l = g^ik A_kl (sum over k)
+! Second contraction: contract temp^i_l with g^jl over l index
+Aup = MATMUL(temp, TRANSPOSE(gup))  ! Aup^ij = temp^i_l g^lj = g^ik A_kl g^lj
 
 ! Extract results
 Rxx = Aup(1,1); Rxy = Aup(1,2); Rxz = Aup(1,3)
@@ -121,10 +124,10 @@ dg = np.array([[[gxxx, gxyx, gxzx],  # ∂_k g_1j
 
 # Christoffel: Γ^i_jk = ½ g^il (∂_j g_lk + ∂_k g_lj - ∂_l g_jk)
 # Build the symmetric combination of derivatives
-# dg[i,j,k] = ∂_k g_ij, so:
-#   ∂_j g_lk = dg[l,k,j] (permute last two indices)
-#   ∂_k g_lj = dg[l,j,k] (already in correct order)
-#   ∂_l g_jk = dg[j,k,l] (permute: [i,j,k] → [j,k,i])
+# dg[i,j,k] = ∂_k g_ij, so we need to rearrange indices:
+#   ∂_j g_lk = dg[l,k,j] → use transpose(0, 2, 1) to swap j↔k
+#   ∂_k g_lj = dg[l,j,k] → already in correct order
+#   ∂_l g_jk = dg[j,k,l] → use transpose(1, 2, 0) for cyclic permutation (i→j, j→k, k→i)
 sym_deriv = dg.transpose(0, 2, 1) + dg - dg.transpose(1, 2, 0)
 Gamma = 0.5 * np.einsum('il,ljk->ijk', g_up, sym_deriv)
 
