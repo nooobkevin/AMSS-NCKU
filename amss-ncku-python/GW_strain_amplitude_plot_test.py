@@ -929,7 +929,7 @@ def test_fourier_transform( outdir, figure_outdir, detector_number_i, total_mass
     ## plt.plot( time_grid_new, GW_h_cross_l2m1, \
     ##           color='cyan',   label="l=2 m=1 hx",  linestyle='--', linewidth=2 )
     plt.plot( numpy.log(psi4_l2m2_real_omega), numpy.log(numpy.real(psi4_l2m2_real_omega_spectrem)), \
-              color='black',  label="l=2 m=2 $\psi$($\omega$)",                       linewidth=2 )
+              color='black',  label=r"l=2 m=2 $\psi$($\omega$)",                       linewidth=2 )
     plt.plot( numpy.log(psi4_l2m2_real_omega), numpy.log(psi4_l2m2_real_omega_integration),          \
               color='blue',  label=r"l=2 m=2 -$\psi$($\omega$)/$\tilde{\omega}^{2}$", linewidth=2 )
     ## plt.plot( psi4_l2m2_real_omega, numpy.real(psi4_l2m2_real_omega_spectrem),  \
