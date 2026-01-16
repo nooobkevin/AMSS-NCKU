@@ -635,7 +635,7 @@ def generate_gravitational_wave_psi4_plot( outdir, figure_outdir, detector_numbe
     Detector_Distance_R = input_data.Detector_Rmax - Detector_Interval * detector_number_i
     
     plt.figure( figsize=(8,8) )                                   ## 这里 figsize 可以设定图形的大小
-    plt.title( f" Gravitational Wave $\Psi_{4}$   Detector Distance =  { Detector_Distance_R } ", fontsize=18 )   ## 这里 fontsize 可以设定文字大小
+    plt.title( rf" Gravitational Wave $\Psi_{{4}}$   Detector Distance =  { Detector_Distance_R } ", fontsize=18 )   ## 这里 fontsize 可以设定文字大小
     plt.plot( time2[detector_number_i], psi4_l2m0_real2[detector_number_i],      \
               color='red',    label="l=2 m=0 real",                       linewidth=2 )
     plt.plot( time2[detector_number_i], psi4_l2m0_imaginary2[detector_number_i], \
