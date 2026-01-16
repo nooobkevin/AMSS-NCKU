@@ -56,7 +56,7 @@ Rxy, Ryy, Ryz = A_up[1, :]
 Rxz, Ryz, Rzz = A_up[2, :]
 ```
 
-**Reduction**: 23 lines → 3 lines (87% reduction)
+**Reduction**: 23 lines of manual tensor indexing → 1 line einsum + 3 lines extraction = ~80% reduction in tensor operation code. Full context (including setup) reduces from 23 lines to ~12 lines.
 
 ### Proposed Solution 2: Modern Fortran with MATMUL
 
@@ -73,9 +73,10 @@ Adown(1,:) = [Axx, Axy, Axz]
 Adown(2,:) = [Axy, Ayy, Ayz]
 Adown(3,:) = [Axz, Ayz, Azz]
 
-! Two matrix multiplications: A^ij = g^ik (g^jl A_kl)
-temp = MATMUL(gup, Adown)
-Aup = MATMUL(temp, TRANSPOSE(gup))
+! For symmetric tensors: A^ij = g^ik g^jl A_kl = g^ik A_kl g^lj
+! Contract first with second index of A, then first index
+temp = MATMUL(gup, Adown)        ! temp^i_j = g^ik A_kj
+Aup = MATMUL(temp, gup)          ! Aup^ij = temp^i_k g^kj = g^ik A_kl g^lj
 
 ! Extract results
 Rxx = Aup(1,1); Rxy = Aup(1,2); Rxz = Aup(1,3)
@@ -119,8 +120,13 @@ dg = np.array([[[gxxx, gxyx, gxzx],  # ∂_k g_1j
                 [gxzz, gyzz, gzzz]]])
 
 # Christoffel: Γ^i_jk = ½ g^il (∂_j g_lk + ∂_k g_lj - ∂_l g_jk)
-Gamma = 0.5 * np.einsum('il,jlk->ijk', g_up, 
-                        dg[:, :, :] + dg.transpose(0, 2, 1) - dg.transpose(2, 0, 1))
+# Build the symmetric combination of derivatives
+# dg[i,j,k] = ∂_k g_ij, so:
+#   ∂_j g_lk = dg[l,k,j] (permute last two indices)
+#   ∂_k g_lj = dg[l,j,k] (already in correct order)
+#   ∂_l g_jk = dg[j,k,l] (permute: [i,j,k] → [j,k,i])
+sym_deriv = dg.transpose(0, 2, 1) + dg - dg.transpose(1, 2, 0)
+Gamma = 0.5 * np.einsum('il,ljk->ijk', g_up, sym_deriv)
 
 # Extract specific components
 Gamxxx = Gamma[0, 0, 0]  # Γ^x_xx

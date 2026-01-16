@@ -110,12 +110,12 @@
 
 - **BSSN Fields** (3 time levels: current, previous, RHS):
   - `phi` (conformal factor χ = e^(-4φ))
-  - `trK` (trace of extrinsic curvature)
+  - `trK` (trace of extrinsic curvature K)
   - `gxx, gxy, gxz, gyy, gyz, gzz` (conformal 3-metric γ̃ᵢⱼ)
   - `Axx, Axy, Axz, Ayy, Ayz, Azz` (traceless extrinsic curvature Ãᵢⱼ)
-  - `Gmx, Gmy, Gmz` (auxiliary connection functions Γ̃ⁱ)
+  - `Gmx, Gmy, Gmz` (auxiliary connection functions: Gmx=Γ̃ˣ, Gmy=Γ̃ʸ, Gmz=Γ̃ᶻ)
   - `Lap` (lapse function α)
-  - `Sfx, Sfy, Sfz` (shift vector βⁱ)
+  - `Sfx, Sfy, Sfz` (shift vector: Sfx=βˣ, Sfy=βʸ, Sfz=βᶻ)
   - `dtSfx, dtSfy, dtSfz` (shift drivers ∂ₜβⁱ)
 
 - **Diagnostic Fields**:
@@ -332,11 +332,12 @@ class patch {
 
 ## Key Findings and Problems
 
-### 1. **Code Quality Issues** ("屎山" - Legacy Code Pile)
+### 1. **Code Quality Issues** (Legacy Codebase)
 - Written in 2007, uses outdated C++ (pre-C++11)
 - Mixed C++/Fortran90 with manual interfaces
 - Minimal comments, cryptic variable names
 - No modern build system (handwritten Makefiles)
+- High technical debt accumulated over ~18 years
 
 ### 2. **Massive Code Duplication**
 - `bssn_rhs.f90` (1700 lines), `Z4c_rhs.f90` (1800 lines), `bssnEScalar_rhs.f90` (1700 lines)
